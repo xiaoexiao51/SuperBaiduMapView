@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tv_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="定位结果"
+        android:textColor="#834792"/>
+
+    <Button
+        android:id="@+id/bt_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="测试定位"/>
+
+    <Button
+        android:id="@+id/bt_location2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="测试定位2"/>
+
+</LinearLayout>
