@@ -76,7 +76,6 @@ public class LocationActivity2 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_location2);
         ButterKnife.bind(this);
         // 地理编码查询结果监听器
