@@ -224,21 +224,26 @@ public class LocationActivity2 extends AppCompatActivity {
                 if (bdLocation == null) {
                     return;
                 }
+                mLlLocation.setVisibility(View.VISIBLE);
+                mIvBigpin.setVisibility(View.VISIBLE);
                 // 第一次定位时，将地图位置移动到当前位置
                 if (isFirstRequest) {
-                    Log.e("NetUtil", "定位吧.......");
+                    Log.d("NetUtil", "定位吧.......");
                     isFirstRequest = false;
 //                    LatLng latLng = new LatLng(bdLocation.getLatitude(), bdLocation.getLongitude());
 //                    MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(latLng);
 //                    mBaiduMap.animateMapStatus(update);
+                    double latitude = bdLocation.getLatitude();
+                    double longitude = bdLocation.getLongitude();
+                    Log.d("NetUtil", latitude + "\n" + longitude);
                     MyLocationData locData = new MyLocationData.Builder()
-                            .latitude(bdLocation.getLatitude())  //纬度
-                            .longitude(bdLocation.getLongitude())//经度
+                            .latitude(latitude)  //纬度
+                            .longitude(longitude)//经度
                             .build();
                     mBaiduMap.setMyLocationData(locData);
 //                    setPopupTipsInfo(latLng);
 
-                    src_point = new LatLng(bdLocation.getLatitude(), bdLocation.getLongitude());
+                    src_point = new LatLng(latitude, longitude);
                     MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(src_point);
                     mBaiduMap.animateMapStatus(update);
                     mLlLocation.postDelayed(srcLatLonRunnable, 500);
@@ -255,6 +260,8 @@ public class LocationActivity2 extends AppCompatActivity {
         option.location(latLng);
         //发起反地理编码请求
         mGeoCoder.reverseGeoCode(option);
+        mLlLocation.setVisibility(View.VISIBLE);
+        mIvBigpin.setVisibility(View.VISIBLE);
     }
 
     @OnClick({R.id.tv_return, R.id.iv_location})
@@ -264,8 +271,8 @@ public class LocationActivity2 extends AppCompatActivity {
                 Intent data = new Intent();
                 data.putExtra("address", mAddress + " " + mDescription);
                 data.putExtra("latLon", formatValue(selectLat) + "," + formatValue(selectLon));
-                setResult(RESULT_OK, data);
-                LocationActivity2.this.finish();
+                /*setResult(RESULT_OK, data);
+                LocationActivity2.this.finish();*/
                 break;
             case R.id.iv_location:
                 isFirstRequest = true;
