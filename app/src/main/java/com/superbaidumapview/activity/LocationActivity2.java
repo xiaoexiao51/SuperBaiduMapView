@@ -3,19 +3,23 @@ package com.superbaidumapview.activity;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
-import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
@@ -50,6 +54,9 @@ public class LocationActivity2 extends AppCompatActivity {
     @Bind(R.id.ll_location)
     LinearLayout mLlLocation;
 
+    @Bind(R.id.searchView)
+    SearchView searchView;
+
     private BaiduMap mBaiduMap;
     private GeoCoder mGeoCoder;
     private LocationClient locationClient;
@@ -77,6 +84,14 @@ public class LocationActivity2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location2);
+        /*View decorView = getWindow().getDecorView();
+        int option = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(option);*/
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.hide();
+        }
+
         ButterKnife.bind(this);
         // 地理编码查询结果监听器
         mGeoCoder = GeoCoder.newInstance();
@@ -85,8 +100,38 @@ public class LocationActivity2 extends AppCompatActivity {
         initMapView();
         // 声明LocationClient类
         initLocationOptions();
+        EditText editText = ((EditText)  searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text));
+        editText.setHintTextColor(Color.WHITE);
+        editText.setTextColor(Color.WHITE);
+        /*searchView.setFocusable(true);
+        searchView.requestFocus();
+        searchView.requestFocusFromTouch();*/
+        searchView.setIconified(false);
+        searchView.clearFocus();
+        searchView.setQueryHint("请输入地理坐标，并以逗号分隔");
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                String input = query.replaceAll("，", ",");
+                String[] arr = input.split(",");
+                if(arr.length < 2){
+                    Toast.makeText(getApplicationContext(),"坐标输入有误！",Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                src_point = new LatLng(Double.parseDouble(arr[0]), Double.parseDouble(arr[1]));
+                MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(src_point);
+                mBaiduMap.animateMapStatus(update);
+                mLlLocation.postDelayed(srcLatLonRunnable, 500);
+                return true;
+            }
 
-        Intent intent = getIntent();
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        /*Intent intent = getIntent();
         if (intent != null) {
             String src_latlon = intent.getStringExtra("src_latlon");
             String[] split = src_latlon.split(",");
@@ -94,8 +139,9 @@ public class LocationActivity2 extends AppCompatActivity {
             MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(src_point);
             mBaiduMap.animateMapStatus(update);
             mLlLocation.postDelayed(srcLatLonRunnable, 500);
-        }
+        }*/
     }
+
 
     private Runnable srcLatLonRunnable = new Runnable() {
         @Override
@@ -156,7 +202,8 @@ public class LocationActivity2 extends AppCompatActivity {
                     mAnimatorSet.setDuration(500);
                     mAnimatorSet.start();
                     mTvLocation.setText(mDescription);
-                    mLlLocation.setVisibility(View.VISIBLE);
+                    /*mLlLocation.setVisibility(View.VISIBLE);
+                    mIvBigpin.setVisibility(View.VISIBLE);*/
                 }
             }
         });
@@ -190,6 +237,13 @@ public class LocationActivity2 extends AppCompatActivity {
                             .build();
                     mBaiduMap.setMyLocationData(locData);
 //                    setPopupTipsInfo(latLng);
+
+                    src_point = new LatLng(bdLocation.getLatitude(), bdLocation.getLongitude());
+                    MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(src_point);
+                    mBaiduMap.animateMapStatus(update);
+                    mLlLocation.postDelayed(srcLatLonRunnable, 500);
+                    mLlLocation.setVisibility(View.GONE);
+                    mIvBigpin.setVisibility(View.GONE);
                 }
             }
         });
@@ -226,6 +280,7 @@ public class LocationActivity2 extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        super.onResume();
         mMapView.onResume();
         mBaiduMap.setMyLocationEnabled(true);
         if (!locationClient.isStarted()) {

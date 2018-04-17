@@ -22,7 +22,7 @@ public class SuperApplication extends Application {
         SDKInitializer.initialize(getApplicationContext());
 
         // 初始化百度地图定位相关
-        initLocationOptions();
+//        initLocationOptions();
     }
 
     private void initLocationOptions() {
