@@ -217,8 +217,12 @@ public class LocationActivity2 extends AppCompatActivity {
                             .position(ll_pt)
                             .icon(bitmap)
                             .zIndex(12)
-                            .draggable(true);
+                            .draggable(true)
+                            .title(mAddress);
                     overlay = mBaiduMap.addOverlay(options);
+                    LatLng point = new LatLng(latitude, longitude);
+                    MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(point);
+                    mBaiduMap.animateMapStatus(update);
                 }
             }
         });
