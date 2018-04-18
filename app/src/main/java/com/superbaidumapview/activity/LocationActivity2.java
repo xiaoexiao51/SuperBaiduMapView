@@ -55,8 +55,8 @@ public class LocationActivity2 extends AppCompatActivity {
     TextView mTvLocation;
     @Bind(R.id.iv_bigpin)
     ImageView mIvBigpin;
-//    @Bind(R.id.ll_location)
-//    LinearLayout mLlLocation;
+    @Bind(R.id.ll_location)
+    LinearLayout mLlLocation;
 
     @Bind(R.id.searchView)
     SearchView searchView;
