@@ -1,7 +1,6 @@
 package com.superbaidumapview.activity;
 
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,8 +10,6 @@ import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,10 +50,10 @@ public class LocationActivity2 extends AppCompatActivity {
     MapView mMapView;
     @Bind(R.id.tv_location)
     TextView mTvLocation;
-    @Bind(R.id.iv_bigpin)
+   /* @Bind(R.id.iv_bigpin)
     ImageView mIvBigpin;
     @Bind(R.id.ll_location)
-    LinearLayout mLlLocation;
+    LinearLayout mLlLocation;*/
 
     @Bind(R.id.searchView)
     SearchView searchView;
@@ -128,7 +125,7 @@ public class LocationActivity2 extends AppCompatActivity {
                 src_point = new LatLng(Double.parseDouble(arr[0]), Double.parseDouble(arr[1]));
                 MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(src_point);
                 mBaiduMap.animateMapStatus(update);
-                mLlLocation.postDelayed(srcLatLonRunnable, 500);
+                searchView.postDelayed(srcLatLonRunnable, 500);
                 return true;
             }
 
@@ -166,7 +163,7 @@ public class LocationActivity2 extends AppCompatActivity {
         mBaiduMap.setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {
             @Override
             public void onMapStatusChangeStart(MapStatus mapStatus) {
-                mLlLocation.setVisibility(View.GONE);
+//                mLlLocation.setVisibility(View.GONE);
             }
 
             @Override
@@ -201,14 +198,14 @@ public class LocationActivity2 extends AppCompatActivity {
                     selectLat = location.latitude;
                     selectLon = location.longitude;
                     // 显示大头针所在的信息
-                    if (mAnimatorSet == null) {
+                    /*if (mAnimatorSet == null) {
                         mAnimatorSet = new AnimatorSet();
                     }
                     mAnimatorSet.playTogether(ObjectAnimator.ofFloat(mIvBigpin, "translationY", 0.0f, -30.0f, 0.0f),
                             ObjectAnimator.ofFloat(mIvBigpin, "rotationY", 0.0f, 720.0f));
                     mAnimatorSet.setDuration(500);
                     mAnimatorSet.start();
-                    mTvLocation.setText(mDescription);
+                    mTvLocation.setText(mDescription);*/
                     /*mLlLocation.setVisibility(View.VISIBLE);
                     mIvBigpin.setVisibility(View.VISIBLE);*/
                     if(overlay != null){
@@ -220,7 +217,7 @@ public class LocationActivity2 extends AppCompatActivity {
                             .position(ll_pt)
                             .icon(bitmap)
                             .zIndex(12)
-                            .draggable(true).title(mAddress);
+                            .draggable(true);
                     overlay = mBaiduMap.addOverlay(options);
                 }
             }
@@ -242,8 +239,8 @@ public class LocationActivity2 extends AppCompatActivity {
                 if (bdLocation == null) {
                     return;
                 }
-                mLlLocation.setVisibility(View.VISIBLE);
-                mIvBigpin.setVisibility(View.VISIBLE);
+               /* mLlLocation.setVisibility(View.VISIBLE);
+                mIvBigpin.setVisibility(View.VISIBLE);*/
                 // 第一次定位时，将地图位置移动到当前位置
                 if (isFirstRequest) {
                     Log.d("NetUtil", "定位吧.......");
@@ -264,9 +261,9 @@ public class LocationActivity2 extends AppCompatActivity {
                     src_point = new LatLng(latitude, longitude);
                     MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(src_point);
                     mBaiduMap.animateMapStatus(update);
-                    mLlLocation.postDelayed(srcLatLonRunnable, 500);
+                    /*mLlLocation.postDelayed(srcLatLonRunnable, 500);
                     mLlLocation.setVisibility(View.GONE);
-                    mIvBigpin.setVisibility(View.GONE);
+                    mIvBigpin.setVisibility(View.GONE);*/
                 }
             }
         });
@@ -278,8 +275,8 @@ public class LocationActivity2 extends AppCompatActivity {
         option.location(latLng);
         //发起反地理编码请求
         mGeoCoder.reverseGeoCode(option);
-        mLlLocation.setVisibility(View.VISIBLE);
-        mIvBigpin.setVisibility(View.VISIBLE);
+        /*mLlLocation.setVisibility(View.VISIBLE);
+        mIvBigpin.setVisibility(View.VISIBLE);*/
     }
 
     @OnClick({R.id.tv_return, R.id.iv_location})
@@ -316,7 +313,7 @@ public class LocationActivity2 extends AppCompatActivity {
     protected void onPause() {
         mMapView.onPause();
         super.onPause();
-        mLlLocation.removeCallbacks(srcLatLonRunnable);
+//        mLlLocation.removeCallbacks(srcLatLonRunnable);
     }
 
     @Override

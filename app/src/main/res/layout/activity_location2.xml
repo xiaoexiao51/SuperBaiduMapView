@@ -57,6 +57,7 @@
         </LinearLayout>
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/iv_bigpin"
             android:layout_width="50dp"
             android:layout_height="50dp"
