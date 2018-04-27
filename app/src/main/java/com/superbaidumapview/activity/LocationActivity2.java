@@ -178,13 +178,15 @@ public class LocationActivity2 extends AppCompatActivity {
                         .title(mAddress);
                 overlayList.add(mBaiduMap.addOverlay(options));
             }
+
         }
+
     }
 
     private void initMapView() {
         mBaiduMap = mMapView.getMap();
 //        mMapView.setVisibility(View.GONE);
-        mRadarView.setVisibility(View.GONE);
+//        mRadarView.setVisibility(View.GONE);
         mBaiduMap.setMaxAndMinZoomLevel(20, 11);
         MapStatus mapStatus = new MapStatus.Builder().zoom(18).build();
         MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mapStatus);
@@ -206,6 +208,10 @@ public class LocationActivity2 extends AppCompatActivity {
 //                setPopupTipsInfo(ptCenter);
                 Point p = mBaiduMap.getProjection().toScreenLocation(mapStatus.target);
                 Log.d("point", p.x + "\n" + p.y);
+                for (LatLng latLng : latLngList) {
+                    p = mBaiduMap.getProjection().toScreenLocation(latLng);
+                    Log.d("init", p.x + "\n" + p.y);
+                }
 
             }
         });
@@ -258,6 +264,10 @@ public class LocationActivity2 extends AppCompatActivity {
                     mBaiduMap.animateMapStatus(update);
                     Point p = mBaiduMap.getProjection().toScreenLocation(point);
                     Log.d("point", p.x + "\n" + p.y);
+                    for (LatLng latLng : latLngList) {
+                        p = mBaiduMap.getProjection().toScreenLocation(latLng);
+                        Log.d("init", p.x + "\n" + p.y);
+                    }
                 }
             }
         });
@@ -304,12 +314,7 @@ public class LocationActivity2 extends AppCompatActivity {
                     mLlLocation.setVisibility(View.GONE);
                     mIvBigpin.setVisibility(View.GONE);*/
 
-                    mMapView.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            createMaker(latitude,longitude);
-                        }
-                    },2000);
+                    createMaker(latitude,longitude);
 
                 }
             }
