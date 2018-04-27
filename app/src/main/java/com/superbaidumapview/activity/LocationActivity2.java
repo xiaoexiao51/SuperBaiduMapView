@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -98,10 +97,10 @@ public class LocationActivity2 extends AppCompatActivity {
         /*View decorView = getWindow().getDecorView();
         int option = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(option);*/
-        ActionBar actionBar = getSupportActionBar();
+        /*ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();
-        }
+        }*/
 
         ButterKnife.bind(this);
         // 地理编码查询结果监听器
@@ -118,6 +117,7 @@ public class LocationActivity2 extends AppCompatActivity {
         searchView.requestFocus();
         searchView.requestFocusFromTouch();*/
         mRadarView.setSearching(true);
+        searchView.setVisibility(View.GONE);
         searchView.setIconified(false);
         searchView.clearFocus();
         searchView.setQueryHint("请输入地理坐标，并以逗号分隔");
@@ -204,15 +204,21 @@ public class LocationActivity2 extends AppCompatActivity {
 
             @Override
             public void onMapStatusChangeFinish(MapStatus mapStatus) {
-//                LatLng ptCenter = mBaiduMap.getMapStatus().target;
+                LatLng ptCenter = mBaiduMap.getMapStatus().target;
 //                setPopupTipsInfo(ptCenter);
+
+                //重新把当前位置设置为地图中心
+                /*MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(ptCenter);
+                mBaiduMap.animateMapStatus(update);*/
                 Point p = mBaiduMap.getProjection().toScreenLocation(mapStatus.target);
                 Log.d("point", p.x + "\n" + p.y);
+                List<Point> pointList = new ArrayList<>();
                 for (LatLng latLng : latLngList) {
                     p = mBaiduMap.getProjection().toScreenLocation(latLng);
+                    pointList.add(p);
                     Log.d("init", p.x + "\n" + p.y);
                 }
-
+                mRadarView.addPoint(pointList);
             }
         });
 
