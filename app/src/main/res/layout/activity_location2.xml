@@ -16,10 +16,17 @@
         android:layout_height="match_parent">
 
         <com.baidu.mapapi.map.MapView
+            android:layout_gravity="center"
             android:id="@+id/mapView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
             android:clickable="true"/>
+
+        <com.superbaidumapview.RadarView
+            android:id="@+id/radarView"
+            android:layout_gravity="center"
+            android:layout_width="300dp"
+            android:layout_height="300dp" />
 
         <LinearLayout
             android:id="@+id/ll_location"

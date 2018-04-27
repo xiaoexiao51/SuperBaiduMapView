@@ -3,6 +3,7 @@ package com.superbaidumapview.activity;
 import android.animation.AnimatorSet;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -27,7 +28,6 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.Overlay;
-import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.geocode.GeoCodeResult;
@@ -36,8 +36,11 @@ import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.superbaidumapview.R;
+import com.superbaidumapview.RadarView;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -50,6 +53,8 @@ public class LocationActivity2 extends AppCompatActivity {
     MapView mMapView;
     @Bind(R.id.tv_location)
     TextView mTvLocation;
+    @Bind(R.id.radarView)
+    RadarView mRadarView;
    /* @Bind(R.id.iv_bigpin)
     ImageView mIvBigpin;
     @Bind(R.id.ll_location)
@@ -72,6 +77,8 @@ public class LocationActivity2 extends AppCompatActivity {
     private double latitude;
     private double longitude;
     private Overlay overlay;
+    private List<Overlay> overlayList = new ArrayList<>();
+    private List<LatLng> latLngList = new ArrayList<>();
 
     /**
      * 格式化数字，保留小数点后两位
@@ -92,7 +99,7 @@ public class LocationActivity2 extends AppCompatActivity {
         int option = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(option);*/
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null){
+        if (actionBar != null) {
             actionBar.hide();
         }
 
@@ -104,12 +111,13 @@ public class LocationActivity2 extends AppCompatActivity {
         initMapView();
         // 声明LocationClient类
         initLocationOptions();
-        EditText editText = ((EditText)  searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text));
+        EditText editText = ((EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text));
         editText.setHintTextColor(Color.WHITE);
         editText.setTextColor(Color.WHITE);
         /*searchView.setFocusable(true);
         searchView.requestFocus();
         searchView.requestFocusFromTouch();*/
+        mRadarView.setSearching(true);
         searchView.setIconified(false);
         searchView.clearFocus();
         searchView.setQueryHint("请输入地理坐标，并以逗号分隔");
@@ -118,8 +126,8 @@ public class LocationActivity2 extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 String input = query.replaceAll("，", ",");
                 String[] arr = input.split(",");
-                if(arr.length < 2){
-                    Toast.makeText(getApplicationContext(),"坐标输入有误！",Toast.LENGTH_SHORT).show();
+                if (arr.length < 2) {
+                    Toast.makeText(getApplicationContext(), "坐标输入有误！", Toast.LENGTH_SHORT).show();
                     return false;
                 }
                 src_point = new LatLng(Double.parseDouble(arr[0]), Double.parseDouble(arr[1]));
@@ -154,8 +162,29 @@ public class LocationActivity2 extends AppCompatActivity {
         }
     };
 
+    private void createMaker(double latitude,double longitude) {
+        if(latLngList.isEmpty()){
+            BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.ic_pin);
+            latLngList.add(new LatLng(latitude + 0.001,longitude + 0.001));
+            latLngList.add(new LatLng(latitude - 0.001,longitude + 0.001));
+            latLngList.add(new LatLng(latitude - 0.001,longitude - 0.001));
+            latLngList.add(new LatLng(latitude + 0.001,longitude - 0.001));
+            for (LatLng latLng : latLngList) {
+                MarkerOptions options = new MarkerOptions()
+                        .position(latLng)
+                        .icon(bitmap)
+                        .zIndex(12)
+                        .draggable(true)
+                        .title(mAddress);
+                overlayList.add(mBaiduMap.addOverlay(options));
+            }
+        }
+    }
+
     private void initMapView() {
         mBaiduMap = mMapView.getMap();
+//        mMapView.setVisibility(View.GONE);
+        mRadarView.setVisibility(View.GONE);
         mBaiduMap.setMaxAndMinZoomLevel(20, 11);
         MapStatus mapStatus = new MapStatus.Builder().zoom(18).build();
         MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mapStatus);
@@ -175,6 +204,9 @@ public class LocationActivity2 extends AppCompatActivity {
             public void onMapStatusChangeFinish(MapStatus mapStatus) {
 //                LatLng ptCenter = mBaiduMap.getMapStatus().target;
 //                setPopupTipsInfo(ptCenter);
+                Point p = mBaiduMap.getProjection().toScreenLocation(mapStatus.target);
+                Log.d("point", p.x + "\n" + p.y);
+
             }
         });
 
@@ -208,21 +240,24 @@ public class LocationActivity2 extends AppCompatActivity {
                     mTvLocation.setText(mDescription);*/
                     /*mLlLocation.setVisibility(View.VISIBLE);
                     mIvBigpin.setVisibility(View.VISIBLE);*/
-                    if(overlay != null){
+                    if (overlay != null) {
                         overlay.remove();
                     }
                     LatLng ll_pt = new LatLng(selectLat, selectLon);
-                    BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.ic_pin);
+                    /*BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.radar_default_point_ico);
                     OverlayOptions options = new MarkerOptions()
                             .position(ll_pt)
                             .icon(bitmap)
                             .zIndex(12)
                             .draggable(true)
                             .title(mAddress);
-                    overlay = mBaiduMap.addOverlay(options);
+                    overlay = mBaiduMap.addOverlay(options);*/
                     LatLng point = new LatLng(latitude, longitude);
+                    Log.d("result", latitude + "\n" + longitude);
                     MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(point);
                     mBaiduMap.animateMapStatus(update);
+                    Point p = mBaiduMap.getProjection().toScreenLocation(point);
+                    Log.d("point", p.x + "\n" + p.y);
                 }
             }
         });
@@ -268,6 +303,14 @@ public class LocationActivity2 extends AppCompatActivity {
                     /*mLlLocation.postDelayed(srcLatLonRunnable, 500);
                     mLlLocation.setVisibility(View.GONE);
                     mIvBigpin.setVisibility(View.GONE);*/
+
+                    mMapView.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            createMaker(latitude,longitude);
+                        }
+                    },2000);
+
                 }
             }
         });
