@@ -5,15 +5,30 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <FrameLayout
+    <android.support.v7.widget.SearchView
+        android:background="@color/colorPrimary"
+        android:id="@+id/searchView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"/>
+
+    <com.superbaidumapview.CircleFrameLayout
+        android:layout_marginTop="120dp"
+        android:layout_gravity="center"
+        android:layout_width="300dp"
+        android:layout_height="300dp">
 
         <com.baidu.mapapi.map.MapView
+            android:layout_gravity="center"
             android:id="@+id/mapView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clickable="true"/>
+
+        <com.superbaidumapview.RadarView
+            android:id="@+id/radarView"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <LinearLayout
             android:id="@+id/ll_location"
@@ -51,6 +66,7 @@
         </LinearLayout>
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/iv_bigpin"
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -59,6 +75,7 @@
             android:src="@drawable/ic_pin"/>
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/iv_location"
             android:layout_width="45dp"
             android:layout_height="45dp"
@@ -67,6 +84,6 @@
             android:layout_marginLeft="10dp"
             android:src="@drawable/ic_loc"/>
 
-    </FrameLayout>
+    </com.superbaidumapview.CircleFrameLayout>
 
 </LinearLayout>
